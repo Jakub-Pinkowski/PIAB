@@ -24,7 +24,11 @@
         {
             return typeof(BlazorApp1.Components.Intranet.Layout.IntranetLayout);
         }
-        else if (pageType == typeof(BlazorApp1.Components.Customer.Pages.Customer))
+        else if (pageType == typeof(BlazorApp1.Components.Customer.Pages.Customer) ||
+        pageType == typeof(BlazorApp1.Components.Customer.Pages.Shop) ||
+        pageType == typeof(BlazorApp1.Components.Customer.Pages.Categories) ||
+        pageType == typeof(BlazorApp1.Components.Customer.Pages.Sale) ||
+        pageType == typeof(BlazorApp1.Components.Customer.Pages.About))
         {
             return typeof(BlazorApp1.Components.Customer.Layout.CustomerLayout);
         }
