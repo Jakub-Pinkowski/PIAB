@@ -1,0 +1,36 @@
+﻿@using BlazorApp1.Components.Intranet.Pages
+@using BlazorApp1.Components.Customer.Pages
+
+<Router AppAssembly="@typeof(Program).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="GetLayout(routeData.PageType)!" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <p>Sorry, there's nothing at this address.</p>
+    </NotFound>
+</Router>
+
+@code {
+    private Type? GetLayout(Type pageType)
+    {
+        if (pageType == typeof(BlazorApp1.Components.Intranet.Pages.Intranet) ||
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Products) ||
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Employees) ||
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.News) ||
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Orders) ||
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Reports) ||
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Support))
+        {
+            return typeof(BlazorApp1.Components.Intranet.Layout.IntranetLayout);
+        }
+        else if (pageType == typeof(BlazorApp1.Components.Customer.Pages.Customer))
+        {
+            return typeof(BlazorApp1.Components.Customer.Layout.CustomerLayout);
+        }
+        else
+        {
+            return null;
+        }
+    }
+}

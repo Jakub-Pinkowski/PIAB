@@ -1,0 +1,73 @@
+@page "/intranet/reports"
+
+<PageTitle>Reports</PageTitle>
+
+<h1 class="mb-4">Reports</h1>
+
+<!-- List of Reports -->
+<div class="row">
+    @foreach (var report in reports)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">@report.Title</h5>
+                    <p class="card-text">@report.Description</p>
+                    <button class="btn btn-primary mt-auto" @onclick="() => ShowReport(report)">View Report</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Report Modal -->
+@if (selectedReport != null)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@selectedReport.Title</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@selectedReport.Description</p>
+                    <p>@selectedReport.Content</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Report> reports = new List<Report>
+    {
+        new Report { Title = "Sales Report Q1", Description = "Detailed sales report for the first quarter.", Content = "Sales increased by 20% compared to the previous quarter. The top-selling products were Product A, Product B, and Product C. \n\nIn January, we saw a significant rise in sales due to the holiday season. February maintained steady growth, while March showed a slight decline as the season ended. \n\nOur marketing campaigns contributed significantly to the sales boost, especially the social media ads and email marketing. We also introduced new products that were well-received by our customers." },
+        new Report { Title = "Customer Feedback", Description = "Summary of customer feedback and reviews.", Content = "Customers are generally satisfied with our products. The main areas for improvement are shipping times and customer service response times. \n\nPositive feedback highlighted the quality and variety of our products. Many customers appreciated the user-friendly website and the seamless shopping experience. \n\nNegative feedback focused on delayed shipments and slow responses from customer support. We are working on improving these areas by optimizing our logistics and training our support team." },
+        new Report { Title = "Inventory Report", Description = "Current inventory levels and stock status.", Content = "Inventory levels are stable. We have sufficient stock for most products, but there are some shortages in Product X and Product Y. \n\nWe conducted a thorough inventory audit last month, which revealed discrepancies in stock levels for a few items. These discrepancies have been addressed, and measures have been put in place to prevent future occurrences. \n\nWe are also exploring new suppliers to ensure a steady supply of high-demand products and to avoid stockouts." },
+        new Report { Title = "Financial Report", Description = "Financial performance and analysis.", Content = "The company achieved a net profit of $1.2 million this quarter. The main contributors to the profit were increased sales and cost-saving measures. \n\nOur revenue grew by 15% compared to the previous quarter, driven by higher sales volumes and better pricing strategies. \n\nWe also implemented several cost-saving initiatives, such as renegotiating supplier contracts and optimizing our operational processes, which helped reduce expenses." },
+        new Report { Title = "Market Analysis", Description = "Market trends and competitive analysis.", Content = "The market is growing at a steady rate. Our main competitors are Company A and Company B. We need to focus on innovation and customer satisfaction to stay ahead. \n\nRecent trends indicate a shift towards eco-friendly products and sustainable practices. Consumers are becoming more conscious of their environmental impact and prefer brands that align with their values. \n\nTo capitalize on this trend, we are planning to introduce a new line of eco-friendly products and enhance our sustainability efforts across the company." }
+    };
+
+    private Report? selectedReport;
+
+    private void ShowReport(Report report)
+    {
+        selectedReport = report;
+    }
+
+    private void CloseModal()
+    {
+        selectedReport = null;
+    }
+
+    public class Report
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
+    }
+}

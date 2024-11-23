@@ -1,0 +1,181 @@
+@page "/intranet/products"
+
+@using Microsoft.AspNetCore.Components.Forms
+
+<PageTitle>Products</PageTitle>
+
+<h1>Products</h1>
+
+<!-- Table of Existing Products -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Description</th>
+            <th scope="col">Price</th>
+            <th scope="col">Category</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in products)
+        {
+            <tr>
+                <th scope="row">@product.Id</th>
+                <td>@product.Name</td>
+                <td>@product.Description</td>
+                <td>@product.Price</td>
+                <td>@product.Category</td>
+                <td>
+                    <button class="btn btn-secondary" @onclick="() => EditProduct(product)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => ConfirmDeleteProduct(product)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Form to Add/Edit Product -->
+<h2>@(isEditMode ? "Edit Product" : "Add New Product")</h2>
+
+<EditForm Model="@currentProduct" OnValidSubmit="@SaveProduct">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="productName" class="form-label">Product Name</label>
+        <InputText id="productName" class="form-control" @bind-Value="currentProduct.Name" />
+    </div>
+
+    <div class="mb-3">
+        <label for="productDescription" class="form-label">Product Description</label>
+        <InputTextArea id="productDescription" class="form-control" @bind-Value="currentProduct.Description" />
+    </div>
+
+    <div class="mb-3">
+        <label for="productPrice" class="form-label">Product Price</label>
+        <InputNumber id="productPrice" class="form-control" @bind-Value="currentProduct.Price" />
+    </div>
+
+    <div class="mb-3">
+        <label for="productCategory" class="form-label">Product Category</label>
+        <InputText id="productCategory" class="form-control" @bind-Value="currentProduct.Category" />
+    </div>
+
+<button type="submit" class="btn btn-primary">@((isEditMode ? "Save Changes" : "Add Product"))</button>
+@if (isEditMode)
+{
+    <button type="button" class="btn btn-secondary ms-2" @onclick="CancelEdit">Cancel</button>
+}
+</EditForm>
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteConfirmation)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" @onclick="CancelDelete"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the product: @productToDelete?.Name?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteProduct">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Product> products = new List<Product>
+    {
+        new Product { Id = 1, Name = "Product 1", Description = "Description 1", Price = 10.0m, Category = "Category 1" },
+        new Product { Id = 2, Name = "Product 2", Description = "Description 2", Price = 20.0m, Category = "Category 2" },
+        new Product { Id = 3, Name = "Product 3", Description = "Description 3", Price = 30.0m, Category = "Category 3" }
+    };
+
+    private Product currentProduct = new Product();
+    private Product? productToDelete;
+    private bool isEditMode = false;
+    private bool showDeleteConfirmation = false;
+
+    private void EditProduct(Product product)
+    {
+        currentProduct = new Product
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            Category = product.Category
+        };
+        isEditMode = true;
+        StateHasChanged();
+    }
+
+    private void SaveProduct()
+    {
+        if (isEditMode)
+        {
+            var product = products.FirstOrDefault(p => p.Id == currentProduct.Id);
+            if (product != null)
+            {
+                product.Name = currentProduct.Name;
+                product.Description = currentProduct.Description;
+                product.Price = currentProduct.Price;
+                product.Category = currentProduct.Category;
+            }
+        }
+        else
+        {
+            currentProduct.Id = products.Count + 1;
+            products.Add(currentProduct);
+        }
+
+        currentProduct = new Product();
+        isEditMode = false;
+    }
+
+    private void CancelEdit()
+    {
+        currentProduct = new Product();
+        isEditMode = false;
+    }
+
+    private void ConfirmDeleteProduct(Product product)
+    {
+        productToDelete = product;
+        showDeleteConfirmation = true;
+    }
+
+    private void CancelDelete()
+    {
+        productToDelete = null;
+        showDeleteConfirmation = false;
+    }
+
+    private void DeleteProduct()
+    {
+        if (productToDelete != null)
+        {
+            products.Remove(productToDelete);
+            productToDelete = null;
+            showDeleteConfirmation = false;
+        }
+    }
+
+    public class Product
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+        public string Category { get; set; } = string.Empty;
+    }
+}

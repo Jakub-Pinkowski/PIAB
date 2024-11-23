@@ -1,0 +1,39 @@
+@page "/intranet"
+
+<PageTitle>Home</PageTitle>
+
+<h1 class="mb-4">Intranet Dashboard</h1>
+
+<div class="row">
+    @foreach (var intranetPage in intranetPages)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">@intranetPage.Title</h5>
+                    <p class="card-text">@intranetPage.Description</p>
+                    <a href="@intranetPage.Link" class="btn btn-primary mt-auto">Go to @intranetPage.Title</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<IntranetPage> intranetPages = new List<IntranetPage>
+    {
+        new IntranetPage { Title = "Products", Description = "Manage and view all products.", Link = "/intranet/products" },
+        new IntranetPage { Title = "Employees", Description = "View the list of employees.", Link = "/intranet/employees" },
+        new IntranetPage { Title = "News", Description = "Read the latest company news.", Link = "/intranet/news" },
+        new IntranetPage { Title = "Orders", Description = "View and manage customer orders.", Link = "/intranet/orders" },
+        new IntranetPage { Title = "Reports", Description = "Access sales and performance reports.", Link = "/intranet/reports" },
+        new IntranetPage { Title = "Support", Description = "Get help with IT, HR, and other support needs.", Link = "/intranet/support" }
+    };
+
+    public class IntranetPage
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Link { get; set; } = string.Empty;
+    }
+}
