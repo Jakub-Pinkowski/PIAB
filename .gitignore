@@ -1,6 +1,6 @@
 # .NET
-bin/
-obj/
+**/bin/
+**/obj/
 *.user
 *.rsuser
 *.suo
@@ -30,4 +30,4 @@ Generated\
 node_modules/
 
 # Publish output
-wwwroot/
+**/wwwroot/
