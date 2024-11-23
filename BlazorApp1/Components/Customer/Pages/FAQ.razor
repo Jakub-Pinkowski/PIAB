@@ -1,0 +1,42 @@
+@page "/customer/faq"
+
+<PageTitle>FAQ</PageTitle>
+
+<h1 class="mb-4 text-center">Frequently Asked Questions</h1>
+
+<div class="container mt-5">
+    @foreach (var faq in faqs)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">@faq.Question</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">@faq.Answer</p>
+            </div>
+        </div>
+    }
+
+    <div class="text-center mt-4">
+        <p>Didn't find what you were looking for?</p>
+        <a href="/customer/contact" class="btn btn-primary">Contact Us</a>
+    </div>
+</div>
+
+@code {
+    private List<FaqItem> faqs = new List<FaqItem>
+    {
+        new FaqItem { Id = 1, Question = "What is your return policy?", Answer = "Our return policy allows you to return products within 30 days of purchase." },
+        new FaqItem { Id = 2, Question = "Do you offer international shipping?", Answer = "Yes, we offer international shipping to many countries. Shipping fees may vary." },
+        new FaqItem { Id = 3, Question = "How can I track my order?", Answer = "You can track your order using the tracking number provided in your order confirmation email." },
+        new FaqItem { Id = 4, Question = "What payment methods do you accept?", Answer = "We accept various payment methods including credit cards, PayPal, and bank transfers." },
+        new FaqItem { Id = 5, Question = "How can I contact customer support?", Answer = "You can contact our customer support through the contact form on our website or by calling our support hotline." }
+    };
+
+    public class FaqItem
+    {
+        public int Id { get; set; }
+        public string Question { get; set; } = string.Empty;
+        public string Answer { get; set; } = string.Empty;
+    }
+}
