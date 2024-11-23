@@ -29,3 +29,4 @@
 /Users/jakubpinkowski/Desktop/Studies/Semester_3/PIAB/project/vamos/BlazorApp1/obj/Debug/net8.0/BlazorApp1.pdb
 /Users/jakubpinkowski/Desktop/Studies/Semester_3/PIAB/project/vamos/BlazorApp1/obj/Debug/net8.0/BlazorApp1.genruntimeconfig.cache
 /Users/jakubpinkowski/Desktop/Studies/Semester_3/PIAB/project/vamos/BlazorApp1/obj/Debug/net8.0/ref/BlazorApp1.dll
+/Users/jakubpinkowski/Desktop/Studies/Semester_3/PIAB/project/vamos/BlazorApp1/obj/Debug/net8.0/BlazorApp1.sourcelink.json
