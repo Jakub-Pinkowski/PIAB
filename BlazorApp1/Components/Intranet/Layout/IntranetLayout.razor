@@ -1,16 +1,18 @@
 @using BlazorApp1.Components.UI
 @inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenuIntranet />
+<div class="d-flex flex-column min-vh-100">
+    <div class="d-flex flex-grow-1">
+        <div class="sidebar flex-shrink-0">
+            <NavMenuIntranet />
+        </div>
+
+        <main class="main-content flex-grow-1">
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
     </div>
 
-    <main>
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+    <Footer />
 </div>
-
-<Footer />
