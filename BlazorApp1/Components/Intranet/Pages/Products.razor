@@ -66,7 +66,7 @@
 <button type="submit" class="btn btn-primary">@((isEditMode ? "Save Changes" : "Add Product"))</button>
 @if (isEditMode)
 {
-    <button type="button" class="btn btn-secondary ms-2" @onclick="CancelEdit">Cancel</button>
+    <button type="button" class="btn btn-danger ms-2" @onclick="CancelEdit">Cancel</button>
 }
 </EditForm>
 
