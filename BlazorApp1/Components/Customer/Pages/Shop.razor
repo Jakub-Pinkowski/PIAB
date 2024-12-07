@@ -78,7 +78,7 @@
                 <h5>Reviews</h5>
                 @if (GetProductReviews(selectedProduct.Id).Any())
                     {
-                        <ul>
+                        <ul style="list-style: none; margin: 0; padding: 0;">
                             @foreach (var review in GetProductReviews(selectedProduct.Id))
                             {
                                 <li>
