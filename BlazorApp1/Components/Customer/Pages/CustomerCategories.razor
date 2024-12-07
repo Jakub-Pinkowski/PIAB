@@ -1,73 +1,118 @@
 @page "/customer/customercategories"
 
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorApp1.Data
+@using BlazorApp1.Models
+@inject DatabaseService DbService
+
 <PageTitle>Categories</PageTitle>
 
-<h1 class="mb-4">Reports</h1>
+<h1 class="mb-4">Categories</h1>
 
-<!-- List of Reports -->
 <div class="row">
-    @foreach (var report in reports)
+    @foreach (var category in categories)
     {
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">@report.Title</h5>
-                    <p class="card-text">@report.Description</p>
-                    <button class="btn btn-primary mt-auto" @onclick="() => ShowReport(report)">View Report</button>
+        <div class="col-md-4 mb-4 d-flex">
+            <div class="card flex-fill shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">@category.Name</h5>
+                    <p class="card-text">Number of Products: @GetProductCount(category.Id)</p>
+                    <h6>Top Products</h6>
+                    <ul style="list-style: none; margin: 0; padding: 0;">
+                        @foreach (var product in GetTopProducts(category.Id))
+                        {
+                            <li>
+                                <p><strong>@product.Name</strong> - @product.Price.ToString("C")</p>
+                            </li>
+                        }
+                    </ul>
+                    <h6>Suppliers</h6>
+                    <ul style="list-style: none; margin: 0; padding: 0;">
+                        @foreach (var supplier in GetCategorySuppliers(category.Id))
+                        {
+                            <li>
+                                <p><strong>@supplier.Name</strong></p>
+                            </li>
+                        }
+                    </ul>
+                    <h6>Tags</h6>
+                    <ul style="list-style: none; margin: 0; padding: 0;">
+                        @foreach (var tag in GetCategoryTags(category.Id))
+                        {
+                            <li>
+                                <p><strong>@tag.Name</strong></p>
+                            </li>
+                        }
+                    </ul>
                 </div>
             </div>
         </div>
     }
 </div>
 
-<!-- Report Modal -->
-@if (selectedReport != null)
-{
-    <div class="modal show" tabindex="-1" style="display: block;">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">@selectedReport.Title</h5>
-                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>@selectedReport.Description</p>
-                    <p>@selectedReport.Content</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-}
+<style>
+    h1 {
+        color: #343a40;
+    }
+
+    .card {
+        border-radius: 10px;
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+    .card-title {
+        font-weight: bold;
+    }
+
+    .card-text {
+        color: #6c757d;
+    }
+</style>
 
 @code {
-    private List<Report> reports = new List<Report>
-    {
-        new Report { Title = "Sales Report Q1", Description = "Detailed sales report for the first quarter.", Content = "Sales increased by 20% compared to the previous quarter. The top-selling products were Product A, Product B, and Product C. \n\nIn January, we saw a significant rise in sales due to the holiday season. February maintained steady growth, while March showed a slight decline as the season ended. \n\nOur marketing campaigns contributed significantly to the sales boost, especially the social media ads and email marketing. We also introduced new products that were well-received by our customers." },
-        new Report { Title = "Customer Feedback", Description = "Summary of customer feedback and reviews.", Content = "Customers are generally satisfied with our products. The main areas for improvement are shipping times and customer service response times. \n\nPositive feedback highlighted the quality and variety of our products. Many customers appreciated the user-friendly website and the seamless shopping experience. \n\nNegative feedback focused on delayed shipments and slow responses from customer support. We are working on improving these areas by optimizing our logistics and training our support team." },
-        new Report { Title = "Inventory Report", Description = "Current inventory levels and stock status.", Content = "Inventory levels are stable. We have sufficient stock for most products, but there are some shortages in Product X and Product Y. \n\nWe conducted a thorough inventory audit last month, which revealed discrepancies in stock levels for a few items. These discrepancies have been addressed, and measures have been put in place to prevent future occurrences. \n\nWe are also exploring new suppliers to ensure a steady supply of high-demand products and to avoid stockouts." },
-        new Report { Title = "Financial Report", Description = "Financial performance and analysis.", Content = "The company achieved a net profit of $1.2 million this quarter. The main contributors to the profit were increased sales and cost-saving measures. \n\nOur revenue grew by 15% compared to the previous quarter, driven by higher sales volumes and better pricing strategies. \n\nWe also implemented several cost-saving initiatives, such as renegotiating supplier contracts and optimizing our operational processes, which helped reduce expenses." },
-        new Report { Title = "Market Analysis", Description = "Market trends and competitive analysis.", Content = "The market is growing at a steady rate. Our main competitors are Company A and Company B. We need to focus on innovation and customer satisfaction to stay ahead. \n\nRecent trends indicate a shift towards eco-friendly products and sustainable practices. Consumers are becoming more conscious of their environmental impact and prefer brands that align with their values. \n\nTo capitalize on this trend, we are planning to introduce a new line of eco-friendly products and enhance our sustainability efforts across the company." }
-    };
+    private List<Category> categories = new List<Category>();
+    private List<Product> products = new List<Product>();
+    private List<Supplier> suppliers = new List<Supplier>();
+    private List<Tag> tags = new List<Tag>();
+    private List<ProductSupplier> productSuppliers = new List<ProductSupplier>();
+    private List<ProductTag> productTags = new List<ProductTag>();
 
-    private Report? selectedReport;
-
-    private void ShowReport(Report report)
+    protected override async Task OnInitializedAsync()
     {
-        selectedReport = report;
+        categories = await DbService.GetItemsAsync<Category>();
+        products = await DbService.GetItemsAsync<Product>();
+        suppliers = await DbService.GetItemsAsync<Supplier>();
+        tags = await DbService.GetItemsAsync<Tag>();
+        productSuppliers = await DbService.GetItemsAsync<ProductSupplier>();
+        productTags = await DbService.GetItemsAsync<ProductTag>();
     }
 
-    private void CloseModal()
+    private int GetProductCount(int categoryId)
     {
-        selectedReport = null;
+        return products.Count(p => p.CategoryId == categoryId);
     }
 
-    public class Report
+    private IEnumerable<Product> GetTopProducts(int categoryId)
     {
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public string Content { get; set; } = string.Empty;
+        return products.Where(p => p.CategoryId == categoryId).Take(3);
+    }
+
+    private IEnumerable<Supplier> GetCategorySuppliers(int categoryId)
+    {
+        var productIds = products.Where(p => p.CategoryId == categoryId).Select(p => p.Id);
+        var supplierIds = productSuppliers.Where(ps => productIds.Contains(ps.ProductId)).Select(ps =>
+        ps.SupplierId).Distinct();
+        return suppliers.Where(s => supplierIds.Contains(s.Id));
+    }
+
+    private IEnumerable<Tag> GetCategoryTags(int categoryId)
+    {
+        var productIds = products.Where(p => p.CategoryId == categoryId).Select(p => p.Id);
+        var tagIds = productTags.Where(pt => productIds.Contains(pt.ProductId)).Select(pt => pt.TagId).Distinct();
+        return tags.Where(t => tagIds.Contains(t.Id));
     }
 }
