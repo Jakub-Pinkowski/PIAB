@@ -1,4 +1,6 @@
 using BlazorApp1.Components;
+using BlazorApp1.Data;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,13 +8,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// Configure SQLite
+var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "app.db");
+var databaseService = new DatabaseService(dbPath);
+builder.Services.AddSingleton(databaseService);
+
+// Initialize the database
+await databaseService.CreateTablesAsync();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

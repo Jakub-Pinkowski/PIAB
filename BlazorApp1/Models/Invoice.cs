@@ -1,6 +1,6 @@
 using SQLite;
 
-namespace BackendAPI.Models
+namespace BlazorApp1.Models
 {
     public class Invoice : IIdentifiable
     {
