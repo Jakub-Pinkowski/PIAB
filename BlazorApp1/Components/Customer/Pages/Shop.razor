@@ -13,6 +13,7 @@
     private List<Product> products = new List<Product>();
     private List<Category> categories = new List<Category>();
     private List<Review> reviews = new List<Review>();
+    private List<Supplier> suppliers = new List<Supplier>();
     private Product? selectedProduct;
 
     protected override async Task OnInitializedAsync()
@@ -20,6 +21,7 @@
         products = await DbService.GetItemsAsync<Product>();
         categories = await DbService.GetItemsAsync<Category>();
         reviews = await DbService.GetItemsAsync<Review>();
+        suppliers = await DbService.GetItemsAsync<Supplier>();
     }
 
     private void ShowMoreInfo(Product product)
@@ -37,6 +39,11 @@
     private IEnumerable<Review> GetProductReviews(int productId)
     {
         return reviews.Where(r => r.ProductId == productId);
+    }
+
+    private IEnumerable<Supplier> GetProductSuppliers(int supplierId)
+    {
+        return suppliers.Where(s => s.Id == supplierId);
     }
 }
 
@@ -75,8 +82,25 @@
                 <p>@selectedProduct.Description</p>
                 <p><strong>Price: </strong>@selectedProduct.Price.ToString("C")</p>
                 <p><strong>Category: </strong>@GetCategoryName(selectedProduct.CategoryId)</p>
-                <h5>Reviews</h5>
-                @if (GetProductReviews(selectedProduct.Id).Any())
+
+                <h6>Suppliers</h6>
+                @if (GetProductSuppliers(selectedProduct.SupplierId).Any())
+                    {
+                        <ul style="list-style: none; margin: 0; padding: 0;">
+                            @foreach (var supplier in GetProductSuppliers(selectedProduct.SupplierId))
+                            {
+                                <li>
+                                    <p><strong>Name: </strong>@supplier.Name</p>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>No suppliers available for this product.</p>
+                    }
+                    <h6>Reviews</h6>
+                    @if (GetProductReviews(selectedProduct.Id).Any())
                     {
                         <ul style="list-style: none; margin: 0; padding: 0;">
                             @foreach (var review in GetProductReviews(selectedProduct.Id))
