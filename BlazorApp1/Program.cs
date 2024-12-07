@@ -15,7 +15,7 @@ builder.Services.AddSingleton(databaseService);
 
 // TODO: Only use when needed
 // Reset the database
-// await databaseService.ResetDatabaseAsync();
+await databaseService.ResetDatabaseAsync();
 
 var app = builder.Build();
 
