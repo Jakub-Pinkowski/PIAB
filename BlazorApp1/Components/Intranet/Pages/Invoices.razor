@@ -1,0 +1,152 @@
+@page "/intranet/invoices"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorApp1.Data
+@using BlazorApp1.Models
+@inject DatabaseService DbService
+
+<PageTitle>Invoices</PageTitle>
+
+<h1>Invoices</h1>
+
+<!-- Table of Existing Invoices -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Date</th>
+            <th scope="col">Total Amount</th>
+            <th scope="col">Customer ID</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var invoice in invoices)
+        {
+            <tr>
+                <th scope="row">@invoice.Id</th>
+                <td>@invoice.Date</td>
+                <td>@invoice.TotalAmount</td>
+                <td>@invoice.CustomerId</td>
+                <td>
+                    <button class="btn btn-secondary" @onclick="() => EditInvoice(invoice)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => ConfirmDeleteInvoice(invoice)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Form to Add/Edit Invoice -->
+<h2>@(isEditMode ? "Edit Invoice" : "Add New Invoice")</h2>
+
+<EditForm Model="@currentInvoice" OnValidSubmit="@SaveInvoice">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="invoiceDate" class="form-label">Date</label>
+        <InputDate id="invoiceDate" class="form-control" @bind-Value="currentInvoice.Date" />
+    </div>
+
+    <div class="mb-3">
+        <label for="invoiceTotalAmount" class="form-label">Total Amount</label>
+        <InputNumber id="invoiceTotalAmount" class="form-control" @bind-Value="currentInvoice.TotalAmount" />
+    </div>
+
+    <div class="mb-3">
+        <label for="invoiceCustomerId" class="form-label">Customer ID</label>
+        <InputNumber id="invoiceCustomerId" class="form-control" @bind-Value="currentInvoice.CustomerId" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">@((isEditMode ? "Save Changes" : "Add Invoice"))</button>
+    @if (isEditMode)
+    {
+        <button type="button" class="btn btn-danger ms-2" @onclick="CancelEdit">Cancel</button>
+    }
+</EditForm>
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteConfirmation)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" @onclick="CancelDelete"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the invoice dated: @invoiceToDelete?.Date?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteInvoice">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Invoice> invoices = new List<Invoice>();
+    private Invoice currentInvoice = new Invoice();
+    private Invoice? invoiceToDelete;
+    private bool isEditMode = false;
+    private bool showDeleteConfirmation = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        invoices = await DbService.GetItemsAsync<Invoice>();
+    }
+
+    private void EditInvoice(Invoice invoice)
+    {
+        currentInvoice = new Invoice
+        {
+            Id = invoice.Id,
+            Date = invoice.Date,
+            TotalAmount = invoice.TotalAmount,
+            CustomerId = invoice.CustomerId
+        };
+        isEditMode = true;
+        StateHasChanged();
+    }
+
+    private async Task SaveInvoice()
+    {
+        await DbService.SaveItemAsync(currentInvoice);
+        invoices = await DbService.GetItemsAsync<Invoice>();
+        currentInvoice = new Invoice();
+        isEditMode = false;
+    }
+
+    private void CancelEdit()
+    {
+        currentInvoice = new Invoice();
+        isEditMode = false;
+    }
+
+    private void ConfirmDeleteInvoice(Invoice invoice)
+    {
+        invoiceToDelete = invoice;
+        showDeleteConfirmation = true;
+    }
+
+    private void CancelDelete()
+    {
+        invoiceToDelete = null;
+        showDeleteConfirmation = false;
+    }
+
+    private async Task DeleteInvoice()
+    {
+        if (invoiceToDelete != null)
+        {
+            await DbService.DeleteItemAsync(invoiceToDelete);
+            invoices = await DbService.GetItemsAsync<Invoice>();
+            invoiceToDelete = null;
+            showDeleteConfirmation = false;
+        }
+    }
+}

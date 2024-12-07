@@ -1,0 +1,136 @@
+@page "/intranet/tags"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorApp1.Data
+@using BlazorApp1.Models
+@inject DatabaseService DbService
+
+<PageTitle>Tags</PageTitle>
+
+<h1>Tags</h1>
+
+<!-- Table of Existing Tags -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tag in tags)
+        {
+            <tr>
+                <th scope="row">@tag.Id</th>
+                <td>@tag.Name</td>
+                <td>
+                    <button class="btn btn-secondary" @onclick="() => EditTag(tag)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => ConfirmDeleteTag(tag)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Form to Add/Edit Tag -->
+<h2>@(isEditMode ? "Edit Tag" : "Add New Tag")</h2>
+
+<EditForm Model="@currentTag" OnValidSubmit="@SaveTag">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="tagName" class="form-label">Tag Name</label>
+        <InputText id="tagName" class="form-control" @bind-Value="currentTag.Name" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">@((isEditMode ? "Save Changes" : "Add Tag"))</button>
+    @if (isEditMode)
+    {
+        <button type="button" class="btn btn-danger ms-2" @onclick="CancelEdit">Cancel</button>
+    }
+    </EditForm>
+
+    <!-- Delete Confirmation Modal -->
+    @if (showDeleteConfirmation)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" @onclick="CancelDelete"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the tag: @tagToDelete?.Name?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick="DeleteTag">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@code {
+    private List<Tag> tags = new List<Tag>();
+    private Tag currentTag = new Tag();
+    private Tag? tagToDelete;
+    private bool isEditMode = false;
+    private bool showDeleteConfirmation = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        tags = await DbService.GetItemsAsync<Tag>();
+    }
+
+    private void EditTag(Tag tag)
+    {
+        currentTag = new Tag
+            {
+                Id = tag.Id,
+                Name = tag.Name
+            };
+        isEditMode = true;
+        StateHasChanged();
+    }
+
+    private async Task SaveTag()
+    {
+        await DbService.SaveItemAsync(currentTag);
+        tags = await DbService.GetItemsAsync<Tag>();
+        currentTag = new Tag();
+        isEditMode = false;
+    }
+
+    private void CancelEdit()
+    {
+        currentTag = new Tag();
+        isEditMode = false;
+    }
+
+    private void ConfirmDeleteTag(Tag tag)
+    {
+        tagToDelete = tag;
+        showDeleteConfirmation = true;
+    }
+
+    private void CancelDelete()
+    {
+        tagToDelete = null;
+        showDeleteConfirmation = false;
+    }
+
+    private async Task DeleteTag()
+    {
+        if (tagToDelete != null)
+        {
+            await DbService.DeleteItemAsync(tagToDelete);
+            tags = await DbService.GetItemsAsync<Tag>();
+            tagToDelete = null;
+            showDeleteConfirmation = false;
+        }
+    }
+}

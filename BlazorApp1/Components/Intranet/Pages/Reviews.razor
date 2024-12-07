@@ -1,0 +1,160 @@
+@page "/intranet/reviews"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorApp1.Data
+@using BlazorApp1.Models
+@inject DatabaseService DbService
+
+<PageTitle>Reviews</PageTitle>
+
+<h1>Reviews</h1>
+
+<!-- Table of Existing Reviews -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Content</th>
+            <th scope="col">Rating</th>
+            <th scope="col">Product ID</th>
+            <th scope="col">Customer ID</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var review in reviews)
+        {
+            <tr>
+                <th scope="row">@review.Id</th>
+                <td>@review.Content</td>
+                <td>@review.Rating</td>
+                <td>@review.ProductId</td>
+                <td>@review.CustomerId</td>
+                <td>
+                    <button class="btn btn-secondary" @onclick="() => EditReview(review)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => ConfirmDeleteReview(review)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Form to Add/Edit Review -->
+<h2>@(isEditMode ? "Edit Review" : "Add New Review")</h2>
+
+<EditForm Model="@currentReview" OnValidSubmit="@SaveReview">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="reviewContent" class="form-label">Content</label>
+        <InputTextArea id="reviewContent" class="form-control" @bind-Value="currentReview.Content" />
+    </div>
+
+    <div class="mb-3">
+        <label for="reviewRating" class="form-label">Rating</label>
+        <InputNumber id="reviewRating" class="form-control" @bind-Value="currentReview.Rating" />
+    </div>
+
+    <div class="mb-3">
+        <label for="reviewProductId" class="form-label">Product ID</label>
+        <InputNumber id="reviewProductId" class="form-control" @bind-Value="currentReview.ProductId" />
+    </div>
+
+    <div class="mb-3">
+        <label for="reviewCustomerId" class="form-label">Customer ID</label>
+        <InputNumber id="reviewCustomerId" class="form-control" @bind-Value="currentReview.CustomerId" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">@((isEditMode ? "Save Changes" : "Add Review"))</button>
+    @if (isEditMode)
+    {
+        <button type="button" class="btn btn-danger ms-2" @onclick="CancelEdit">Cancel</button>
+    }
+</EditForm>
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteConfirmation)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" @onclick="CancelDelete"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the review with content: @reviewToDelete?.Content?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteReview">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Review> reviews = new List<Review>();
+    private Review currentReview = new Review();
+    private Review? reviewToDelete;
+    private bool isEditMode = false;
+    private bool showDeleteConfirmation = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        reviews = await DbService.GetItemsAsync<Review>();
+    }
+
+    private void EditReview(Review review)
+    {
+        currentReview = new Review
+        {
+            Id = review.Id,
+            Content = review.Content,
+            Rating = review.Rating,
+            ProductId = review.ProductId,
+            CustomerId = review.CustomerId
+        };
+        isEditMode = true;
+        StateHasChanged();
+    }
+
+    private async Task SaveReview()
+    {
+        await DbService.SaveItemAsync(currentReview);
+        reviews = await DbService.GetItemsAsync<Review>();
+        currentReview = new Review();
+        isEditMode = false;
+    }
+
+    private void CancelEdit()
+    {
+        currentReview = new Review();
+        isEditMode = false;
+    }
+
+    private void ConfirmDeleteReview(Review review)
+    {
+        reviewToDelete = review;
+        showDeleteConfirmation = true;
+    }
+
+    private void CancelDelete()
+    {
+        reviewToDelete = null;
+        showDeleteConfirmation = false;
+    }
+
+    private async Task DeleteReview()
+    {
+        if (reviewToDelete != null)
+        {
+            await DbService.DeleteItemAsync(reviewToDelete);
+            reviews = await DbService.GetItemsAsync<Review>();
+            reviewToDelete = null;
+            showDeleteConfirmation = false;
+        }
+    }
+}
