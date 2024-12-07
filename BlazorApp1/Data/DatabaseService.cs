@@ -81,7 +81,6 @@ namespace BlazorApp1.Data
             await _database.DropTableAsync<Customer>();
             await _database.DropTableAsync<Invoice>();
             await _database.DropTableAsync<InvoiceItem>();
-            await _database.DropTableAsync<News>();
             await _database.DropTableAsync<Product>();
             await _database.DropTableAsync<Review>();
             await _database.DropTableAsync<Supplier>();
@@ -99,7 +98,6 @@ namespace BlazorApp1.Data
             await _database.CreateTableAsync<Customer>();
             await _database.CreateTableAsync<Invoice>();
             await _database.CreateTableAsync<InvoiceItem>();
-            await _database.CreateTableAsync<News>();
             await _database.CreateTableAsync<Product>();
             await _database.CreateTableAsync<Review>();
             await _database.CreateTableAsync<Supplier>();
@@ -218,18 +216,6 @@ namespace BlazorApp1.Data
             foreach (var invoiceItem in invoiceItems)
             {
                 await SaveItemAsync(invoiceItem);
-            }
-
-            // Populate News
-            var news = new List<News>
-            {
-                new News { Title = "New Office Opening", Description = "Our company has officially inaugurated a new office in downtown New York.", Date = DateTime.Now },
-                new News { Title = "Quarterly Revenue Report", Description = "We are thrilled to announce that we achieved record-breaking revenues.", Date = DateTime.Now },
-                new News { Title = "Employee of the Month", Description = "Congratulations to Jane Doe for being awarded Employee of the Month.", Date = DateTime.Now }
-            };
-            foreach (var newsItem in news)
-            {
-                await SaveItemAsync(newsItem);
             }
 
             // Populate Reviews (linked to products and customers)
