@@ -155,11 +155,12 @@
         showDeleteConfirmation = false;
     }
 
-    private void DeleteProduct()
+    private async Task DeleteProduct()
     {
         if (productToDelete != null)
         {
-            products.Remove(productToDelete);
+            await DbService.DeleteItemAsync(productToDelete);
+            products = await DbService.GetItemsAsync<Product>();
             productToDelete = null;
             showDeleteConfirmation = false;
         }
