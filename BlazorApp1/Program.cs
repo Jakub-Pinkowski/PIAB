@@ -14,7 +14,7 @@ var databaseService = new DatabaseService(dbPath);
 builder.Services.AddSingleton(databaseService);
 
 // Initialize the database
-await databaseService.CreateTablesAsync();
+await databaseService.ResetDatabaseAsync();
 
 var app = builder.Build();
 

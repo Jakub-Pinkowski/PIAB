@@ -325,8 +325,6 @@ namespace BlazorApp1.Data
             {
                 Console.WriteLine($"Id: {category.Id}, Name: {category.Name}");
             }
-
-            // You can add similar blocks to check other tables, like Customers, Suppliers, etc.
         }
     }
 }
