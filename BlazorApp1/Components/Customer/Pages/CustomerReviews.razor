@@ -1,20 +1,24 @@
 @page "/customer/customerreviews"
 
 @using Microsoft.AspNetCore.Components.Forms
+@using BlazorApp1.Data
+@using BlazorApp1.Models
+@inject DatabaseService DbService
 
-<PageTitle>News</PageTitle>
+<PageTitle>Customer Reviews</PageTitle>
 
-<h1 class="mb-4">News</h1>
+<h1 class="mb-4">Customer Reviews</h1>
 
 <div class="row">
-    @foreach (var news in newsList)
+    @foreach (var review in reviews)
     {
         <div class="col-md-4 mb-4 d-flex">
             <div class="card flex-fill shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title">@news.Title</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">@news.Subtitle</h6>
-                    <p class="card-text">@news.Description</p>
+                    <h5 class="card-title">@GetProductName(review.ProductId)</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Reviewed by: @GetCustomerName(review.CustomerId)</h6>
+                    <p class="card-text">@review.Content</p>
+                    <p class="card-text"><strong>Rating: </strong>@review.Rating</p>
                 </div>
             </div>
         </div>
@@ -25,39 +29,50 @@
     h1 {
         color: #343a40;
     }
+
     .card {
         border-radius: 10px;
         transition: transform 0.2s;
     }
+
     .card:hover {
         transform: scale(1.05);
     }
+
     .card-title {
         font-weight: bold;
     }
+
     .card-subtitle {
         font-style: italic;
     }
+
     .card-text {
         color: #6c757d;
     }
 </style>
 
 @code {
-    private List<NewsItem> newsList = new List<NewsItem>
-    {
-        new NewsItem { Title = "Amazon Launches New AI Shopping Assistant", Subtitle = "Revolutionizing Online Shopping", Description = "Amazon has introduced a new AI-powered shopping assistant that helps customers find products faster and more efficiently. The assistant uses machine learning to understand customer preferences and provide personalized recommendations." },
-        new NewsItem { Title = "Etsy Reports Record Sales in Q3", Subtitle = "Handmade Goods in High Demand", Description = "Etsy has reported record sales for the third quarter, driven by a surge in demand for handmade and vintage items. The platform saw a 25% increase in active buyers compared to the previous year." },
-        new NewsItem { Title = "Shopify Expands Payment Options", Subtitle = "Introducing Cryptocurrency Payments", Description = "Shopify has announced that it will now accept cryptocurrency payments on its platform. This move aims to provide more flexibility and convenience for both merchants and customers, allowing transactions in Bitcoin, Ethereum, and other popular cryptocurrencies." },
-        new NewsItem { Title = "Alibaba's Singles' Day Breaks Records Again", Subtitle = "World's Largest Shopping Event", Description = "Alibaba's Singles' Day event has once again shattered sales records, with over $74 billion in gross merchandise volume. The annual shopping festival continues to grow in popularity, attracting millions of shoppers from around the world." },
-        new NewsItem { Title = "Walmart Invests in Drone Delivery Service", Subtitle = "Future of Fast Delivery", Description = "Walmart has invested in a new drone delivery service to enhance its logistics and provide faster delivery options for customers. The service aims to deliver packages within 30 minutes, covering a wide range of products from groceries to electronics." },
-        new NewsItem { Title = "eBay Introduces Augmented Reality Feature", Subtitle = "Enhancing the Shopping Experience", Description = "eBay has launched a new augmented reality (AR) feature that allows customers to visualize products in their own space before making a purchase. This innovative tool aims to reduce returns and increase customer satisfaction by providing a more immersive shopping experience." }
-    };
+    private List<Review> reviews = new List<Review>();
+    private List<Product> products = new List<Product>();
+    private List<Customer> customers = new List<Customer>();
 
-    public class NewsItem
+    protected override async Task OnInitializedAsync()
     {
-        public string Title { get; set; } = string.Empty;
-        public string Subtitle { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        reviews = await DbService.GetItemsAsync<Review>();
+        products = await DbService.GetItemsAsync<Product>();
+        customers = await DbService.GetItemsAsync<Customer>();
+    }
+
+    private string GetProductName(int productId)
+    {
+        var product = products.FirstOrDefault(p => p.Id == productId);
+        return product?.Name ?? "Unknown Product";
+    }
+
+    private string GetCustomerName(int customerId)
+    {
+        var customer = customers.FirstOrDefault(c => c.Id == customerId);
+        return customer?.Name ?? "Unknown Customer";
     }
 }
