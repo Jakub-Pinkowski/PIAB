@@ -1,0 +1,81 @@
+@page "/customer/customersuppliers"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorApp1.Data
+@using BlazorApp1.Models
+@inject DatabaseService DbService
+
+<PageTitle>Suppliers</PageTitle>
+
+<h1 class="mb-4">Suppliers</h1>
+
+<div class="row">
+    @foreach (var supplier in suppliers)
+    {
+        <div class="col-md-4 mb-4 d-flex">
+            <div class="card flex-fill shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">@supplier.Name</h5>
+                    <p class="card-text">Contact Email: @supplier.ContactEmail</p>
+                    <p class="card-text">Number of Products: @GetProductCount(supplier.Id)</p>
+                    <h6>Top Products</h6>
+                    <ul style="list-style: none; margin: 0; padding: 0;">
+                        @foreach (var product in GetTopProducts(supplier.Id))
+                        {
+                            <li>
+                                <p><strong>@product.Name</strong> - @product.Price.ToString("C")</p>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    h1 {
+        color: #343a40;
+    }
+
+    .card {
+        border-radius: 10px;
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+    .card-title {
+        font-weight: bold;
+    }
+
+    .card-text {
+        color: #6c757d;
+    }
+</style>
+
+@code {
+    private List<Supplier> suppliers = new List<Supplier>();
+    private List<Product> products = new List<Product>();
+    private List<ProductSupplier> productSuppliers = new List<ProductSupplier>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        suppliers = await DbService.GetItemsAsync<Supplier>();
+        products = await DbService.GetItemsAsync<Product>();
+        productSuppliers = await DbService.GetItemsAsync<ProductSupplier>();
+    }
+
+    private int GetProductCount(int supplierId)
+    {
+        return productSuppliers.Count(ps => ps.SupplierId == supplierId);
+    }
+
+    private IEnumerable<Product> GetTopProducts(int supplierId)
+    {
+        var productIds = productSuppliers.Where(ps => ps.SupplierId == supplierId).Select(ps => ps.ProductId);
+        return products.Where(p => productIds.Contains(p.Id)).Take(3);
+    }
+}
