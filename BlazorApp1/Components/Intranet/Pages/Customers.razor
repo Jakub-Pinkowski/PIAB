@@ -1,0 +1,168 @@
+@page "/intranet/customers"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorApp1.Data
+@using BlazorApp1.Models
+@inject DatabaseService DbService
+
+<PageTitle>Customers</PageTitle>
+
+<h1>Customers</h1>
+
+<!-- Table of Existing Customers -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Registration Date</th>
+            <th scope="col">Phone Number</th>
+            <th scope="col">Address ID</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customer in customers)
+        {
+            <tr>
+                <th scope="row">@customer.Id</th>
+                <td>@customer.Name</td>
+                <td>@customer.Email</td>
+                <td>@customer.RegistrationDate</td>
+                <td>@customer.PhoneNumber</td>
+                <td>@customer.AddressId</td>
+                <td>
+                    <button class="btn btn-secondary" @onclick="() => EditCustomer(customer)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => ConfirmDeleteCustomer(customer)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Form to Add/Edit Customer -->
+<h2>@(isEditMode ? "Edit Customer" : "Add New Customer")</h2>
+
+<EditForm Model="@currentCustomer" OnValidSubmit="@SaveCustomer">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="customerName" class="form-label">Customer Name</label>
+        <InputText id="customerName" class="form-control" @bind-Value="currentCustomer.Name" />
+    </div>
+
+    <div class="mb-3">
+        <label for="customerEmail" class="form-label">Customer Email</label>
+        <InputText id="customerEmail" class="form-control" @bind-Value="currentCustomer.Email" />
+    </div>
+
+    <div class="mb-3">
+        <label for="customerRegistrationDate" class="form-label">Registration Date</label>
+        <InputDate id="customerRegistrationDate" class="form-control" @bind-Value="currentCustomer.RegistrationDate" />
+    </div>
+
+    <div class="mb-3">
+        <label for="customerPhoneNumber" class="form-label">Phone Number</label>
+        <InputText id="customerPhoneNumber" class="form-control" @bind-Value="currentCustomer.PhoneNumber" />
+    </div>
+
+    <div class="mb-3">
+        <label for="customerAddressId" class="form-label">Address ID</label>
+        <InputNumber id="customerAddressId" class="form-control" @bind-Value="currentCustomer.AddressId" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">@((isEditMode ? "Save Changes" : "Add Customer"))</button>
+    @if (isEditMode)
+    {
+        <button type="button" class="btn btn-danger ms-2" @onclick="CancelEdit">Cancel</button>
+    }
+    </EditForm>
+
+    <!-- Delete Confirmation Modal -->
+    @if (showDeleteConfirmation)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" @onclick="CancelDelete"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the customer: @customerToDelete?.Name?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick="DeleteCustomer">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@code {
+    private List<Customer> customers = new List<Customer>();
+    private Customer currentCustomer = new Customer();
+    private Customer? customerToDelete;
+    private bool isEditMode = false;
+    private bool showDeleteConfirmation = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        customers = await DbService.GetItemsAsync<Customer>();
+    }
+
+    private void EditCustomer(Customer customer)
+    {
+        currentCustomer = new Customer
+            {
+                Id = customer.Id,
+                Name = customer.Name,
+                Email = customer.Email,
+                RegistrationDate = customer.RegistrationDate,
+                PhoneNumber = customer.PhoneNumber,
+                AddressId = customer.AddressId
+            };
+        isEditMode = true;
+        StateHasChanged();
+    }
+
+    private async Task SaveCustomer()
+    {
+        await DbService.SaveItemAsync(currentCustomer);
+        customers = await DbService.GetItemsAsync<Customer>();
+        currentCustomer = new Customer();
+        isEditMode = false;
+    }
+
+    private void CancelEdit()
+    {
+        currentCustomer = new Customer();
+        isEditMode = false;
+    }
+
+    private void ConfirmDeleteCustomer(Customer customer)
+    {
+        customerToDelete = customer;
+        showDeleteConfirmation = true;
+    }
+
+    private void CancelDelete()
+    {
+        customerToDelete = null;
+        showDeleteConfirmation = false;
+    }
+
+    private async Task DeleteCustomer()
+    {
+        if (customerToDelete != null)
+        {
+            await DbService.DeleteItemAsync(customerToDelete);
+            customers = await DbService.GetItemsAsync<Customer>();
+            customerToDelete = null;
+            showDeleteConfirmation = false;
+        }
+    }
+}
