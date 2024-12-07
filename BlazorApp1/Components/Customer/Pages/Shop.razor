@@ -1,33 +1,21 @@
 @page "/customer/shop"
 
-@using System.Collections.Generic
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorApp1.Data
+@using BlazorApp1.Models
+@inject DatabaseService DbService
 
 <PageTitle>Shop</PageTitle>
 
 <h1 class="mb-4 text-center">Shop</h1>
 
 @code {
-    private List<Product> products = new List<Product>
-    {
-        new Product { Name = "Mountain Bike", Description = "A high-quality mountain bike.", Price = 299.99m, MoreInfo = "This mountain bike is perfect for off-road adventures. It features a durable frame and high-performance components." },
-        new Product { Name = "Road Bike", Description = "A fast and lightweight road bike.", Price = 399.99m, MoreInfo = "This road bike is designed for speed and efficiency. It has a lightweight frame and aerodynamic design." },
-        new Product { Name = "Cycling Cap", Description = "A stylish cycling cap.", Price = 19.99m, MoreInfo = "Our cycling cap is made from breathable materials and provides excellent sun protection." },
-        new Product { Name = "Running Shoes", Description = "Comfortable running shoes.", Price = 49.99m, MoreInfo = "These running shoes offer superior comfort and support. They are perfect for long-distance running." },
-        new Product { Name = "Backpack", Description = "A durable backpack for all your adventures.", Price = 59.99m, MoreInfo = "Our backpack is spacious and durable. It is ideal for hiking, traveling, and everyday use." },
-        new Product { Name = "Water Bottle", Description = "A reusable water bottle.", Price = 9.99m, MoreInfo = "This water bottle is made from BPA-free materials and is perfect for staying hydrated on the go." },
-        new Product { Name = "Fitness Tracker", Description = "A high-tech fitness tracker.", Price = 99.99m, MoreInfo = "Track your fitness goals with this advanced fitness tracker. It monitors your heart rate, steps, and more." },
-        new Product { Name = "Yoga Mat", Description = "A comfortable yoga mat.", Price = 29.99m, MoreInfo = "This yoga mat provides excellent cushioning and support for your yoga practice." },
-        new Product { Name = "Dumbbells", Description = "A set of adjustable dumbbells.", Price = 79.99m, MoreInfo = "These adjustable dumbbells are perfect for strength training. They are easy to use and store." }
-    };
-
+    private List<Product> products = new List<Product>();
     private Product? selectedProduct;
 
-    public class Product
+    protected override async Task OnInitializedAsync()
     {
-        public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public decimal Price { get; set; }
-        public string MoreInfo { get; set; } = string.Empty;
+        products = await DbService.GetItemsAsync<Product>();
     }
 
     private void ShowMoreInfo(Product product)
@@ -41,13 +29,14 @@
     <div class="row">
         @foreach (var product in products)
         {
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 mb-4" style="z-index: -1;">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title">@product.Name</h5>
                         <p class="card-text">@product.Description</p>
                         <p class="card-text"><strong>@product.Price.ToString("C")</strong></p>
-                        <button class="btn btn-primary" @onclick="() => ShowMoreInfo(product)" data-bs-toggle="modal" data-bs-target="#productModal">See more</button>
+                        <button class="btn btn-primary" @onclick="() => ShowMoreInfo(product)" data-bs-toggle="modal"
+                            data-bs-target="#productModal">See more</button>
                     </div>
                 </div>
             </div>
@@ -58,21 +47,24 @@
 <!-- Modal -->
 @if (selectedProduct != null)
 {
-    <div class="modal fade show" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" style="display: block;">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="productModalLabel">@selectedProduct.Name</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="() => selectedProduct = null"></button>
-                </div>
-                <div class="modal-body">
-                    <p>@selectedProduct.MoreInfo</p>
-                    <p><strong>Price: </strong>@selectedProduct.Price.ToString("C")</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="() => selectedProduct = null">Close</button>
-                </div>
+    <div class="modal fade show" id="productModal" tabindex="-1" aria-labelledby="productModalLabel"
+    style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">@selectedProduct.Name</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    @onclick="() => selectedProduct = null"></button>
+            </div>
+            <div class="modal-body">
+                <p>@selectedProduct.Description</p>
+                <p><strong>Price: </strong>@selectedProduct.Price.ToString("C")</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    @onclick="() => selectedProduct = null">Close</button>
             </div>
         </div>
     </div>
+</div>
 }
