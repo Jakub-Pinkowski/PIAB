@@ -1,5 +1,8 @@
 @page "/intranet"
 
+@using BlazorApp1.Data
+@inject DatabaseService DbService
+
 <PageTitle>Home</PageTitle>
 
 <h1 class="mb-4">Intranet Dashboard</h1>
@@ -17,23 +20,75 @@
             </div>
         </div>
     }
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Reset Database</h5>
+                <p class="card-text">Reset the database to its initial state.</p>
+                <button class="btn btn-danger mt-auto" @onclick="ShowResetConfirmation">Reset Database</button>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Reset Confirmation Modal -->
+@if (showResetConfirmation)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Reset</h5>
+                <button type="button" class="btn-close" @onclick="CancelReset"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to reset the database? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CancelReset">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick="ResetDatabase">Reset</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
 
 @code {
     private List<IntranetPage> intranetPages = new List<IntranetPage>
     {
-        new IntranetPage { Title = "Addresses", Description = "Manage and view all addresses.", Link = "/intranet/addresses" },
-        new IntranetPage { Title = "Categories", Description = "Manage and view all categories.", Link = "/intranet/categories" },
-        new IntranetPage { Title = "Customers", Description = "Manage and view all customers.", Link = "/intranet/customers" },
-        new IntranetPage { Title = "Invoice Items", Description = "Manage and view all invoice items.", Link = "/intranet/invoiceitems" },
-        new IntranetPage { Title = "Invoices", Description = "Manage and view all invoices.", Link = "/intranet/invoices" },
-        new IntranetPage { Title = "News", Description = "Read the latest company news.", Link = "/intranet/news" },
-        new IntranetPage { Title = "Products", Description = "Manage and view all products.", Link = "/intranet/products" },
-        new IntranetPage { Title = "Reviews", Description = "Manage and view all reviews.", Link = "/intranet/reviews" },
-        new IntranetPage { Title = "Suppliers", Description = "Manage and view all suppliers.", Link = "/intranet/suppliers" },
-        new IntranetPage { Title = "Support", Description = "Get help with IT, HR, and other support needs.", Link = "/intranet/support" },
-        new IntranetPage { Title = "Tags", Description = "Manage and view all tags.", Link = "/intranet/tags" }
+    new IntranetPage { Title = "Addresses", Description = "Manage and view all addresses.", Link = "/intranet/addresses" },
+    new IntranetPage { Title = "Categories", Description = "Manage and view all categories.", Link = "/intranet/categories"
+    },
+    new IntranetPage { Title = "Customers", Description = "Manage and view all customers.", Link = "/intranet/customers" },
+    new IntranetPage { Title = "Invoice Items", Description = "Manage and view all invoice items.", Link =
+    "/intranet/invoiceitems" },
+    new IntranetPage { Title = "Invoices", Description = "Manage and view all invoices.", Link = "/intranet/invoices" },
+    new IntranetPage { Title = "News", Description = "Read the latest company news.", Link = "/intranet/news" },
+    new IntranetPage { Title = "Products", Description = "Manage and view all products.", Link = "/intranet/products" },
+    new IntranetPage { Title = "Reviews", Description = "Manage and view all reviews.", Link = "/intranet/reviews" },
+    new IntranetPage { Title = "Suppliers", Description = "Manage and view all suppliers.", Link = "/intranet/suppliers" },
+    new IntranetPage { Title = "Support", Description = "Get help with IT, HR, and other support needs.", Link =
+    "/intranet/support" },
+    new IntranetPage { Title = "Tags", Description = "Manage and view all tags.", Link = "/intranet/tags" }
     };
+
+    private bool showResetConfirmation = false;
+
+    private void ShowResetConfirmation()
+    {
+        showResetConfirmation = true;
+    }
+
+    private void CancelReset()
+    {
+        showResetConfirmation = false;
+    }
+
+    private async Task ResetDatabase()
+    {
+        await DbService.ResetDatabaseAsync();
+        showResetConfirmation = false;
+    }
 
     public class IntranetPage
     {

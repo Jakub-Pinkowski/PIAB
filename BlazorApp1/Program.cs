@@ -13,10 +13,6 @@ var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Lo
 var databaseService = new DatabaseService(dbPath);
 builder.Services.AddSingleton(databaseService);
 
-// TODO: Only use when needed
-// Reset the database
-await databaseService.ResetDatabaseAsync();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
