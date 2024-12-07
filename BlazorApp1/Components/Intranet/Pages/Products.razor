@@ -1,6 +1,9 @@
 @page "/intranet/products"
 
 @using Microsoft.AspNetCore.Components.Forms
+@using BlazorApp1.Data
+@using BlazorApp1.Models
+@inject DatabaseService DbService
 
 <PageTitle>Products</PageTitle>
 
@@ -14,7 +17,8 @@
             <th scope="col">Name</th>
             <th scope="col">Description</th>
             <th scope="col">Price</th>
-            <th scope="col">Category</th>
+            <th scope="col">Category ID</th>
+            <th scope="col">Supplier ID</th>
             <th scope="col">Actions</th>
         </tr>
     </thead>
@@ -26,7 +30,8 @@
                 <td>@product.Name</td>
                 <td>@product.Description</td>
                 <td>@product.Price</td>
-                <td>@product.Category</td>
+                <td>@product.CategoryId</td>
+                <td>@product.SupplierId</td>
                 <td>
                     <button class="btn btn-secondary" @onclick="() => EditProduct(product)">Edit</button>
                     <button class="btn btn-danger" @onclick="() => ConfirmDeleteProduct(product)">Delete</button>
@@ -59,68 +64,67 @@
     </div>
 
     <div class="mb-3">
-        <label for="productCategory" class="form-label">Product Category</label>
-        <InputText id="productCategory" class="form-control" @bind-Value="currentProduct.Category" />
+        <label for="productCategoryId" class="form-label">Product Category ID</label>
+        <InputNumber id="productCategoryId" class="form-control" @bind-Value="currentProduct.CategoryId" />
     </div>
 
-<button type="submit" class="btn btn-primary">@((isEditMode ? "Save Changes" : "Add Product"))</button>
-@if (isEditMode)
-{
-    <button type="button" class="btn btn-danger ms-2" @onclick="CancelEdit">Cancel</button>
-}
-</EditForm>
+    <div class="mb-3">
+        <label for="productSupplierId" class="form-label">Product Supplier ID</label>
+        <InputNumber id="productSupplierId" class="form-control" @bind-Value="currentProduct.SupplierId" />
+    </div>
 
-<!-- Delete Confirmation Modal -->
-@if (showDeleteConfirmation)
+    <button type="submit" class="btn btn-primary">@((isEditMode ? "Save Changes" : "Add Product"))</button>
+    @if (isEditMode)
+    {
+        <button type="button" class="btn btn-danger ms-2" @onclick="CancelEdit">Cancel</button>
+    }
+    </EditForm>
+
+    <!-- Delete Confirmation Modal -->
+    @if (showDeleteConfirmation)
 {
     <div class="modal show" tabindex="-1" style="display: block;">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" @onclick="CancelDelete"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete the product: @productToDelete?.Name?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
-                    <button type="button" class="btn btn-danger" @onclick="DeleteProduct">Delete</button>
-                </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" @onclick="CancelDelete"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the product: @productToDelete?.Name?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick="DeleteProduct">Delete</button>
             </div>
         </div>
     </div>
+</div>
 }
 
 @code {
-    private List<Product> products = new List<Product>
-    {
-        new Product { Id = 1, Name = "Mountain Bike", Description = "A high-quality mountain bike.", Price = 299.99m, Category = "Bikes" },
-        new Product { Id = 2, Name = "Road Bike", Description = "A fast and lightweight road bike.", Price = 399.99m, Category = "Bikes" },
-        new Product { Id = 3, Name = "Cycling Cap", Description = "A stylish cycling cap.", Price = 19.99m, Category = "Accessories" },
-        new Product { Id = 4, Name = "Running Shoes", Description = "Comfortable running shoes.", Price = 49.99m, Category = "Footwear" },
-        new Product { Id = 5, Name = "Backpack", Description = "A durable backpack for all your adventures.", Price = 59.99m, Category = "Accessories" },
-        new Product { Id = 6, Name = "Water Bottle", Description = "A reusable water bottle.", Price = 9.99m, Category = "Accessories" },
-        new Product { Id = 7, Name = "Fitness Tracker", Description = "A high-tech fitness tracker.", Price = 99.99m, Category = "Electronics" },
-        new Product { Id = 8, Name = "Yoga Mat", Description = "A comfortable yoga mat.", Price = 29.99m, Category = "Fitness" },
-        new Product { Id = 9, Name = "Dumbbells", Description = "A set of adjustable dumbbells.", Price = 79.99m, Category = "Fitness" }
-    };
-
+    private List<Product> products = new List<Product>();
     private Product currentProduct = new Product();
     private Product? productToDelete;
     private bool isEditMode = false;
     private bool showDeleteConfirmation = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        products = await DbService.GetItemsAsync<Product>();
+    }
+
     private void EditProduct(Product product)
     {
         currentProduct = new Product
-        {
-            Id = product.Id,
-            Name = product.Name,
-            Description = product.Description,
-            Price = product.Price,
-            Category = product.Category
-        };
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                CategoryId = product.CategoryId,
+                SupplierId = product.SupplierId
+            };
         isEditMode = true;
         StateHasChanged();
     }
@@ -135,7 +139,8 @@
                 product.Name = currentProduct.Name;
                 product.Description = currentProduct.Description;
                 product.Price = currentProduct.Price;
-                product.Category = currentProduct.Category;
+                product.CategoryId = currentProduct.CategoryId;
+                product.SupplierId = currentProduct.SupplierId;
             }
         }
         else
@@ -174,14 +179,5 @@
             productToDelete = null;
             showDeleteConfirmation = false;
         }
-    }
-
-    public class Product
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public decimal Price { get; set; }
-        public string Category { get; set; } = string.Empty;
     }
 }
