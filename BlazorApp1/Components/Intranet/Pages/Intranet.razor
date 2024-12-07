@@ -25,9 +25,7 @@
             <div class="card-body d-flex flex-column">
                 <h5 class="card-title">Reset Database</h5>
                 <p class="card-text">Reset the database to its initial state.</p>
-                <p class="card-text "><strong><em><small>Has to be used if opening the App for the first time to
-                                initialize the
-                                database</small></em></strong></p>
+                <p class="card-text text-sm"><small><strong><em>Has to be used if opening the App for the first time to initialize the database</em></strong></small></p>
                 <button class="btn btn-danger mt-auto" @onclick="ShowResetConfirmation">Reset Database</button>
             </div>
         </div>
@@ -38,44 +36,63 @@
 @if (showResetConfirmation)
 {
     <div class="modal show" tabindex="-1" style="display: block;">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirm Reset</h5>
-                <button type="button" class="btn-close" @onclick="CancelReset"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to reset the database? This action cannot be undone.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" @onclick="CancelReset">Cancel</button>
-                <button type="button" class="btn btn-danger" @onclick="ResetDatabase">Reset</button>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Reset</h5>
+                    <button type="button" class="btn-close" @onclick="CancelReset"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to reset the database? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelReset">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="ResetDatabase">Reset</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+}
+
+<!-- Reset Success Modal -->
+@if (showResetSuccess)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Database Reset</h5>
+                    <button type="button" class="btn-close" @onclick="CloseResetSuccess"></button>
+                </div>
+                <div class="modal-body">
+                    <p>The database has been successfully reset.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @onclick="CloseResetSuccess">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 @code {
     private List<IntranetPage> intranetPages = new List<IntranetPage>
-{
-new IntranetPage { Title = "Addresses", Description = "Manage and view all addresses.", Link = "/intranet/addresses" },
-new IntranetPage { Title = "Categories", Description = "Manage and view all categories.", Link = "/intranet/categories"
-},
-new IntranetPage { Title = "Customers", Description = "Manage and view all customers.", Link = "/intranet/customers" },
-new IntranetPage { Title = "Invoice Items", Description = "Manage and view all invoice items.", Link =
-"/intranet/invoiceitems" },
-new IntranetPage { Title = "Invoices", Description = "Manage and view all invoices.", Link = "/intranet/invoices" },
-new IntranetPage { Title = "News", Description = "Read the latest company news.", Link = "/intranet/news" },
-new IntranetPage { Title = "Products", Description = "Manage and view all products.", Link = "/intranet/products" },
-new IntranetPage { Title = "Reviews", Description = "Manage and view all reviews.", Link = "/intranet/reviews" },
-new IntranetPage { Title = "Suppliers", Description = "Manage and view all suppliers.", Link = "/intranet/suppliers" },
-new IntranetPage { Title = "Support", Description = "Get help with IT, HR, and other support needs.", Link =
-"/intranet/support" },
-new IntranetPage { Title = "Tags", Description = "Manage and view all tags.", Link = "/intranet/tags" }
-};
+    {
+        new IntranetPage { Title = "Addresses", Description = "Manage and view all addresses.", Link = "/intranet/addresses" },
+        new IntranetPage { Title = "Categories", Description = "Manage and view all categories.", Link = "/intranet/categories" },
+        new IntranetPage { Title = "Customers", Description = "Manage and view all customers.", Link = "/intranet/customers" },
+        new IntranetPage { Title = "Invoice Items", Description = "Manage and view all invoice items.", Link = "/intranet/invoiceitems" },
+        new IntranetPage { Title = "Invoices", Description = "Manage and view all invoices.", Link = "/intranet/invoices" },
+        new IntranetPage { Title = "News", Description = "Read the latest company news.", Link = "/intranet/news" },
+        new IntranetPage { Title = "Products", Description = "Manage and view all products.", Link = "/intranet/products" },
+        new IntranetPage { Title = "Reviews", Description = "Manage and view all reviews.", Link = "/intranet/reviews" },
+        new IntranetPage { Title = "Suppliers", Description = "Manage and view all suppliers.", Link = "/intranet/suppliers" },
+        new IntranetPage { Title = "Support", Description = "Get help with IT, HR, and other support needs.", Link = "/intranet/support" },
+        new IntranetPage { Title = "Tags", Description = "Manage and view all tags.", Link = "/intranet/tags" }
+    };
 
     private bool showResetConfirmation = false;
+    private bool showResetSuccess = false;
 
     private void ShowResetConfirmation()
     {
@@ -91,6 +108,12 @@ new IntranetPage { Title = "Tags", Description = "Manage and view all tags.", Li
     {
         await DbService.ResetDatabaseAsync();
         showResetConfirmation = false;
+        showResetSuccess = true;
+    }
+
+    private void CloseResetSuccess()
+    {
+        showResetSuccess = false;
     }
 
     public class IntranetPage
