@@ -1,0 +1,160 @@
+@page "/intranet/addresses"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorApp1.Data
+@using BlazorApp1.Models
+@inject DatabaseService DbService
+
+<PageTitle>Addresses</PageTitle>
+
+<h1>Addresses</h1>
+
+<!-- Table of Existing Addresses -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Street</th>
+            <th scope="col">City</th>
+            <th scope="col">Postal Code</th>
+            <th scope="col">Country</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var address in addresses)
+        {
+            <tr>
+                <th scope="row">@address.Id</th>
+                <td>@address.Street</td>
+                <td>@address.City</td>
+                <td>@address.PostalCode</td>
+                <td>@address.Country</td>
+                <td>
+                    <button class="btn btn-secondary" @onclick="() => EditAddress(address)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => ConfirmDeleteAddress(address)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Form to Add/Edit Address -->
+<h2>@(isEditMode ? "Edit Address" : "Add New Address")</h2>
+
+<EditForm Model="@currentAddress" OnValidSubmit="@SaveAddress">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="addressStreet" class="form-label">Street</label>
+        <InputText id="addressStreet" class="form-control" @bind-Value="currentAddress.Street" />
+    </div>
+
+    <div class="mb-3">
+        <label for="addressCity" class="form-label">City</label>
+        <InputText id="addressCity" class="form-control" @bind-Value="currentAddress.City" />
+    </div>
+
+    <div class="mb-3">
+        <label for="addressPostalCode" class="form-label">Postal Code</label>
+        <InputText id="addressPostalCode" class="form-control" @bind-Value="currentAddress.PostalCode" />
+    </div>
+
+    <div class="mb-3">
+        <label for="addressCountry" class="form-label">Country</label>
+        <InputText id="addressCountry" class="form-control" @bind-Value="currentAddress.Country" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">@((isEditMode ? "Save Changes" : "Add Address"))</button>
+    @if (isEditMode)
+    {
+        <button type="button" class="btn btn-danger ms-2" @onclick="CancelEdit">Cancel</button>
+    }
+    </EditForm>
+
+    <!-- Delete Confirmation Modal -->
+    @if (showDeleteConfirmation)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" @onclick="CancelDelete"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the address: @addressToDelete?.Street?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick="DeleteAddress">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@code {
+    private List<Address> addresses = new List<Address>();
+    private Address currentAddress = new Address();
+    private Address? addressToDelete;
+    private bool isEditMode = false;
+    private bool showDeleteConfirmation = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        addresses = await DbService.GetItemsAsync<Address>();
+    }
+
+    private void EditAddress(Address address)
+    {
+        currentAddress = new Address
+            {
+                Id = address.Id,
+                Street = address.Street,
+                City = address.City,
+                PostalCode = address.PostalCode,
+                Country = address.Country
+            };
+        isEditMode = true;
+        StateHasChanged();
+    }
+
+    private async Task SaveAddress()
+    {
+        await DbService.SaveItemAsync(currentAddress);
+        addresses = await DbService.GetItemsAsync<Address>();
+        currentAddress = new Address();
+        isEditMode = false;
+    }
+
+    private void CancelEdit()
+    {
+        currentAddress = new Address();
+        isEditMode = false;
+    }
+
+    private void ConfirmDeleteAddress(Address address)
+    {
+        addressToDelete = address;
+        showDeleteConfirmation = true;
+    }
+
+    private void CancelDelete()
+    {
+        addressToDelete = null;
+        showDeleteConfirmation = false;
+    }
+
+    private async Task DeleteAddress()
+    {
+        if (addressToDelete != null)
+        {
+            await DbService.DeleteItemAsync(addressToDelete);
+            addresses = await DbService.GetItemsAsync<Address>();
+            addressToDelete = null;
+            showDeleteConfirmation = false;
+        }
+    }
+}

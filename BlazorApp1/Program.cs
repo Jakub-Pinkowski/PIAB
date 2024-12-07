@@ -13,8 +13,9 @@ var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Lo
 var databaseService = new DatabaseService(dbPath);
 builder.Services.AddSingleton(databaseService);
 
-// Initialize the database
-await databaseService.ResetDatabaseAsync();
+// TODO: Only use when needed
+// Reset the database
+// await databaseService.ResetDatabaseAsync();
 
 var app = builder.Build();
 

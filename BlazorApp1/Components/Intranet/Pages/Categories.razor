@@ -1,0 +1,136 @@
+@page "/intranet/categories"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorApp1.Data
+@using BlazorApp1.Models
+@inject DatabaseService DbService
+
+<PageTitle>Categories</PageTitle>
+
+<h1>Categories</h1>
+
+<!-- Table of Existing Categories -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in categories)
+        {
+            <tr>
+                <th scope="row">@category.Id</th>
+                <td>@category.Name</td>
+                <td>
+                    <button class="btn btn-secondary" @onclick="() => EditCategory(category)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => ConfirmDeleteCategory(category)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Form to Add/Edit Category -->
+<h2>@(isEditMode ? "Edit Category" : "Add New Category")</h2>
+
+<EditForm Model="@currentCategory" OnValidSubmit="@SaveCategory">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="categoryName" class="form-label">Category Name</label>
+        <InputText id="categoryName" class="form-control" @bind-Value="currentCategory.Name" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">@((isEditMode ? "Save Changes" : "Add Category"))</button>
+    @if (isEditMode)
+    {
+        <button type="button" class="btn btn-danger ms-2" @onclick="CancelEdit">Cancel</button>
+    }
+    </EditForm>
+
+    <!-- Delete Confirmation Modal -->
+    @if (showDeleteConfirmation)
+{
+    <div class="modal show" tabindex="-1" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" @onclick="CancelDelete"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the category: @categoryToDelete?.Name?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick="DeleteCategory">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@code {
+    private List<Category> categories = new List<Category>();
+    private Category currentCategory = new Category();
+    private Category? categoryToDelete;
+    private bool isEditMode = false;
+    private bool showDeleteConfirmation = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await DbService.GetItemsAsync<Category>();
+    }
+
+    private void EditCategory(Category category)
+    {
+        currentCategory = new Category
+            {
+                Id = category.Id,
+                Name = category.Name
+            };
+        isEditMode = true;
+        StateHasChanged();
+    }
+
+    private async Task SaveCategory()
+    {
+        await DbService.SaveItemAsync(currentCategory);
+        categories = await DbService.GetItemsAsync<Category>();
+        currentCategory = new Category();
+        isEditMode = false;
+    }
+
+    private void CancelEdit()
+    {
+        currentCategory = new Category();
+        isEditMode = false;
+    }
+
+    private void ConfirmDeleteCategory(Category category)
+    {
+        categoryToDelete = category;
+        showDeleteConfirmation = true;
+    }
+
+    private void CancelDelete()
+    {
+        categoryToDelete = null;
+        showDeleteConfirmation = false;
+    }
+
+    private async Task DeleteCategory()
+    {
+        if (categoryToDelete != null)
+        {
+            await DbService.DeleteItemAsync(categoryToDelete);
+            categories = await DbService.GetItemsAsync<Category>();
+            categoryToDelete = null;
+            showDeleteConfirmation = false;
+        }
+    }
+}
