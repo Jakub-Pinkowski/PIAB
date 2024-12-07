@@ -11,11 +11,13 @@
 
 @code {
     private List<Product> products = new List<Product>();
+    private List<Category> categories = new List<Category>();
     private Product? selectedProduct;
 
     protected override async Task OnInitializedAsync()
     {
         products = await DbService.GetItemsAsync<Product>();
+        categories = await DbService.GetItemsAsync<Category>();
     }
 
     private void ShowMoreInfo(Product product)
@@ -23,13 +25,19 @@
         selectedProduct = product;
         StateHasChanged();
     }
+
+    private string GetCategoryName(int categoryId)
+    {
+        var category = categories.FirstOrDefault(c => c.Id == categoryId);
+        return category?.Name ?? "Unknown";
+    }
 }
 
 <div class="container mt-5">
     <div class="row">
         @foreach (var product in products)
         {
-            <div class="col-md-4 mb-4" style="z-index: -1;">
+            <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title">@product.Name</h5>
@@ -59,6 +67,7 @@
             <div class="modal-body">
                 <p>@selectedProduct.Description</p>
                 <p><strong>Price: </strong>@selectedProduct.Price.ToString("C")</p>
+                <p><strong>Category: </strong>@GetCategoryName(selectedProduct.CategoryId)</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
