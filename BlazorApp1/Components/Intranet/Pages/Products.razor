@@ -129,26 +129,10 @@
         StateHasChanged();
     }
 
-    private void SaveProduct()
+    private async Task SaveProduct()
     {
-        if (isEditMode)
-        {
-            var product = products.FirstOrDefault(p => p.Id == currentProduct.Id);
-            if (product != null)
-            {
-                product.Name = currentProduct.Name;
-                product.Description = currentProduct.Description;
-                product.Price = currentProduct.Price;
-                product.CategoryId = currentProduct.CategoryId;
-                product.SupplierId = currentProduct.SupplierId;
-            }
-        }
-        else
-        {
-            currentProduct.Id = products.Count + 1;
-            products.Add(currentProduct);
-        }
-
+        await DbService.SaveItemAsync(currentProduct);
+        products = await DbService.GetItemsAsync<Product>();
         currentProduct = new Product();
         isEditMode = false;
     }
