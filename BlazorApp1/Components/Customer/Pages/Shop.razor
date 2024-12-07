@@ -12,12 +12,14 @@
 @code {
     private List<Product> products = new List<Product>();
     private List<Category> categories = new List<Category>();
+    private List<Review> reviews = new List<Review>();
     private Product? selectedProduct;
 
     protected override async Task OnInitializedAsync()
     {
         products = await DbService.GetItemsAsync<Product>();
         categories = await DbService.GetItemsAsync<Category>();
+        reviews = await DbService.GetItemsAsync<Review>();
     }
 
     private void ShowMoreInfo(Product product)
@@ -30,6 +32,11 @@
     {
         var category = categories.FirstOrDefault(c => c.Id == categoryId);
         return category?.Name ?? "Unknown";
+    }
+
+    private IEnumerable<Review> GetProductReviews(int productId)
+    {
+        return reviews.Where(r => r.ProductId == productId);
     }
 }
 
@@ -68,12 +75,29 @@
                 <p>@selectedProduct.Description</p>
                 <p><strong>Price: </strong>@selectedProduct.Price.ToString("C")</p>
                 <p><strong>Category: </strong>@GetCategoryName(selectedProduct.CategoryId)</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                    @onclick="() => selectedProduct = null">Close</button>
+                <h5>Reviews</h5>
+                @if (GetProductReviews(selectedProduct.Id).Any())
+                    {
+                        <ul>
+                            @foreach (var review in GetProductReviews(selectedProduct.Id))
+                            {
+                                <li>
+                                    <p><strong>Rating: </strong>@review.Rating</p>
+                                    <p>@review.Content</p>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>No reviews available for this product.</p>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        @onclick="() => selectedProduct = null">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 }
