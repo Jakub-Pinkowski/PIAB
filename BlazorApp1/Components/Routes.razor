@@ -14,21 +14,26 @@
 @code {
     private Type? GetLayout(Type pageType)
     {
-        if (pageType == typeof(BlazorApp1.Components.Intranet.Pages.Intranet) ||
-        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Products) ||
+        if (pageType == typeof(BlazorApp1.Components.Intranet.Pages.Addresses) ||
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Categories) ||
         pageType == typeof(BlazorApp1.Components.Intranet.Pages.Customers) ||
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.InvoiceItems) ||
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Invoices) ||
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Intranet) ||
         pageType == typeof(BlazorApp1.Components.Intranet.Pages.News) ||
-        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Orders) ||
-        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Reports) ||
-        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Support))
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Products) ||
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Reviews) ||
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Suppliers) ||
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Support) ||
+        pageType == typeof(BlazorApp1.Components.Intranet.Pages.Tags))
         {
             return typeof(BlazorApp1.Components.Intranet.Layout.IntranetLayout);
         }
-        else if ( pageType == typeof(BlazorApp1.Components.Customer.Pages.Portal) ||
-        pageType == typeof(BlazorApp1.Components.Customer.Pages.Shop) ||
+        else if (pageType == typeof(BlazorApp1.Components.Customer.Pages.About) ||
         pageType == typeof(BlazorApp1.Components.Customer.Pages.Contact) ||
         pageType == typeof(BlazorApp1.Components.Customer.Pages.FAQ) ||
-        pageType == typeof(BlazorApp1.Components.Customer.Pages.About))
+        pageType == typeof(BlazorApp1.Components.Customer.Pages.Portal) ||
+        pageType == typeof(BlazorApp1.Components.Customer.Pages.Shop))
         {
             return typeof(BlazorApp1.Components.Customer.Layout.CustomerLayout);
         }
