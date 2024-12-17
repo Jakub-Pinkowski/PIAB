@@ -48,24 +48,6 @@
 }
 
 <style>
-    .card-img-top {
-        transition: opacity 0.5s ease-in-out;
-    }
-    .card-img-top:hover {
-        opacity: 0;
-    }
-    .card-img-alt {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        transition: opacity 0.5s ease-in-out;
-    }
-    .card-img-top:hover + .card-img-alt {
-        opacity: 1;
-    }
 </style>
 
 <div class="container mt-5">
@@ -74,16 +56,17 @@
         {
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow-sm" style="position: static;">
-                    <div style="position: relative;">
+                    <div>
                         <img src="@product.MainImage" class="card-img-top" alt="Product Image">
-                        <img src="@product.AltImage" class="card-img-alt" alt="Product Image">
+                        @* TODO: Maybe add hover image later *@
+                        @* <img src="@product.AltImage" class="card-img-alt" alt="Product Image"> *@
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">@product.Name</h5>
                         <p class="card-text">@product.Description</p>
                         <p class="card-text"><strong>@product.Price.ToString("C")</strong></p>
                         <button class="btn btn-primary" @onclick="() => ShowMoreInfo(product)" data-bs-toggle="modal"
-                            data-bs-target="#productModal">See more</button>
+                            data-bs-target="#productModal">Quick view</button>
                     </div>
                 </div>
             </div>
