@@ -47,3 +47,4 @@ BlazorApp1/obj/Debug/net8.0/*.deps.json
 BlazorApp1/obj/Debug/net8.0/*.sourcelink.json
 BlazorApp1/obj/Debug/net8.0/scopedcss/
 BlazorApp1/obj/Debug/net8.0/staticwebassets/
+.DS_Store
