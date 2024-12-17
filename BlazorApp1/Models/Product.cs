@@ -11,6 +11,8 @@ namespace BlazorApp1.Models
         public decimal Price { get; set; }
 
         public string Description { get; set; } = string.Empty;
+        public string MainImage { get; set; } = string.Empty;
+        public string AltImage { get; set; } = string.Empty;
 
         // Foreign key to Category
         public int CategoryId { get; set; }

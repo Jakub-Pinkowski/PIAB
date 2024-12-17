@@ -165,21 +165,21 @@ namespace BlazorApp1.Data
             }
 
             // Populate Product (linked to categories and suppliers)
-            var products = new List<Product>
-    {
-        new Product { Name = "Mountain Bike", Price = 500m, Description = "Durable mountain bike designed for all terrains and tough rides.", CategoryId = 1, SupplierId = 1 },
-        new Product { Name = "Road Bike", Price = 400m, Description = "Lightweight road bike, perfect for fast riding on paved roads.", CategoryId = 1, SupplierId = 2 },
-        new Product { Name = "Cycling Cap", Price = 20m, Description = "Comfortable cycling cap to protect you from the sun during long rides.", CategoryId = 2, SupplierId = 3 },
-        new Product { Name = "Sports Cap", Price = 15m, Description = "Stylish sports cap with adjustable straps for a perfect fit.", CategoryId = 2, SupplierId = 4 },
-        new Product { Name = "Backpack 20L", Price = 45m, Description = "Compact backpack with 20L capacity, perfect for day trips.", CategoryId = 3, SupplierId = 5 },
-        new Product { Name = "Backpack 40L", Price = 70m, Description = "Large 40L backpack with multiple compartments for extended trips.", CategoryId = 3, SupplierId = 1 },
-        new Product { Name = "Running Shoes", Price = 80m, Description = "Breathable running shoes designed for comfort during long runs.", CategoryId = 4, SupplierId = 2 },
-        new Product { Name = "Trekking Boots", Price = 120m, Description = "Sturdy trekking boots for outdoor adventures and rough terrains.", CategoryId = 4, SupplierId = 3 },
-        new Product { Name = "Yoga Mat", Price = 30m, Description = "Non-slip yoga mat for all your yoga and fitness needs.", CategoryId = 5, SupplierId = 4 },
-        new Product { Name = "Dumbbells Set", Price = 60m, Description = "Adjustable dumbbells set for strength training.", CategoryId = 5, SupplierId = 5 },
-        new Product { Name = "Novel Book", Price = 25m, Description = "Bestselling novel book.", CategoryId = 3, SupplierId = 6 },
-        new Product { Name = "Face Cream", Price = 35m, Description = "Moisturizing face cream for daily use.", CategoryId = 7, SupplierId = 7 }
-    };
+        var products = new List<Product>
+        {
+            new Product { Name = "Mountain Bike", Price = 500m, Description = "Durable mountain bike designed for all terrains and tough rides.", MainImage = "images/product0_0.webp", AltImage = "images/product0_1.webp", CategoryId = 1, SupplierId = 1 },
+            new Product { Name = "Road Bike", Price = 400m, Description = "Lightweight road bike, perfect for fast riding on paved roads.", MainImage = "images/product1_0.webp", AltImage = "images/product1_1.webp", CategoryId = 1, SupplierId = 2 },
+            new Product { Name = "Cycling Cap", Price = 20m, Description = "Comfortable cycling cap to protect you from the sun during long rides.", MainImage = "images/product2_0.webp", AltImage = "images/product2_1.webp", CategoryId = 2, SupplierId = 3 },
+            new Product { Name = "Sports Cap", Price = 15m, Description = "Stylish sports cap with adjustable straps for a perfect fit.", MainImage = "images/product3_0.webp", AltImage = "images/product3_1.webp", CategoryId = 2, SupplierId = 4 },
+            new Product { Name = "Backpack 20L", Price = 45m, Description = "Compact backpack with 20L capacity, perfect for day trips.", MainImage = "images/product4_0.webp", AltImage = "images/product4_1.webp", CategoryId = 3, SupplierId = 5 },
+            new Product { Name = "Backpack 40L", Price = 70m, Description = "Large 40L backpack with multiple compartments for extended trips.", MainImage = "images/product5_0.webp", AltImage = "images/product5_1.webp", CategoryId = 3, SupplierId = 1 },
+            new Product { Name = "Running Shoes", Price = 80m, Description = "Breathable running shoes designed for comfort during long runs.", MainImage = "images/product6_0.webp", AltImage = "images/product6_1.webp", CategoryId = 4, SupplierId = 2 },
+            new Product { Name = "Trekking Boots", Price = 120m, Description = "Sturdy trekking boots for outdoor adventures and rough terrains.", MainImage = "images/product7_0.webp", AltImage = "images/product7_1.webp", CategoryId = 4, SupplierId = 3 },
+            new Product { Name = "Yoga Mat", Price = 30m, Description = "Non-slip yoga mat for all your yoga and fitness needs.", MainImage = "images/product8_0.webp", AltImage = "images/product8_1.webp", CategoryId = 5, SupplierId = 4 },
+            new Product { Name = "Dumbbells Set", Price = 60m, Description = "Adjustable dumbbells set for strength training.", MainImage = "images/product9_0.webp", AltImage = "images/product9_1.webp", CategoryId = 5, SupplierId = 5 },
+            new Product { Name = "Novel Book", Price = 25m, Description = "Bestselling novel book.", MainImage = "images/product10_0.webp", AltImage = "images/product10_1.webp", CategoryId = 3, SupplierId = 6 },
+            new Product { Name = "Face Cream", Price = 35m, Description = "Moisturizing face cream for daily use.", MainImage = "images/product11_0.webp", AltImage = "images/product11_1.webp", CategoryId = 7, SupplierId = 7 }
+        };
 
             foreach (var product in products)
             {
