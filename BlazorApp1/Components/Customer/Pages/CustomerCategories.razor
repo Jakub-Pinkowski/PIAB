@@ -17,8 +17,8 @@
                 <div class="card-body">
                     <h5 class="card-title">@category.Name</h5>
                     <p class="card-text">Number of Products: @GetProductCount(category.Id)</p>
-                    <h6>Top Products</h6>
-                    <ul style="list-style: none; margin: 0; padding: 0;">
+                    <h6 class="section-title">Top Products</h6>
+                    <ul class="list-unstyled">
                         @foreach (var product in GetTopProducts(category.Id))
                         {
                             <li>
@@ -26,8 +26,8 @@
                             </li>
                         }
                     </ul>
-                    <h6>Suppliers</h6>
-                    <ul style="list-style: none; margin: 0; padding: 0;">
+                    <h6 class="section-title">Suppliers</h6>
+                    <ul class="list-unstyled">
                         @foreach (var supplier in GetCategorySuppliers(category.Id))
                         {
                             <li>
@@ -35,8 +35,8 @@
                             </li>
                         }
                     </ul>
-                    <h6>Tags</h6>
-                    <ul style="list-style: none; margin: 0; padding: 0;">
+                    <h6 class="section-title">Tags</h6>
+                    <ul class="list-unstyled">
                         @foreach (var tag in GetCategoryTags(category.Id))
                         {
                             <li>
@@ -66,10 +66,24 @@
 
     .card-title {
         font-weight: bold;
+        font-size: 1.25rem;
     }
 
     .card-text {
         color: #6c757d;
+    }
+
+    .section-title {
+        color: #6c757d;
+        font-size: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .list-unstyled {
+        list-style: none;
+        margin: 0;
+        padding: 0;
     }
 </style>
 
