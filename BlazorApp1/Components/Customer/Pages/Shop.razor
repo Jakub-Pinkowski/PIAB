@@ -16,6 +16,7 @@
     private List<Review> reviews = new List<Review>();
     private List<Supplier> suppliers = new List<Supplier>();
     private Product? selectedProduct;
+    private int quantity = 1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,6 +29,7 @@
     private void ShowMoreInfo(Product product)
     {
         selectedProduct = product;
+        quantity = 1; // Reset quantity when a new product is selected
         StateHasChanged();
     }
 
@@ -52,7 +54,21 @@
         if (selectedProduct != null)
         {
             var productName = selectedProduct.Name;
-            JS.InvokeVoidAsync("alert", $"Product '{productName}' added to the cart");
+            JS.InvokeVoidAsync("alert", $"Product '{productName}' (Quantity: {quantity}) added to the cart");
+            selectedProduct = null; // Close the modal
+        }
+    }
+
+    private void IncrementQuantity()
+    {
+        quantity++;
+    }
+
+    private void DecrementQuantity()
+    {
+        if (quantity > 1)
+        {
+            quantity--;
         }
     }
 }
@@ -116,6 +132,24 @@
     .modal-body ul li p {
         margin-bottom: 0.25rem;
     }
+
+    .quantity-control {
+        display: flex;
+        align-items: center;
+    }
+
+    .quantity-control button {
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        padding: 0;
+        margin: 0 5px;
+    }
+
+    .quantity-control input {
+        width: 50px;
+        text-align: center;
+    }
 </style>
 
 <!-- Modal -->
@@ -173,6 +207,11 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                     @onclick="() => selectedProduct = null">Close</button>
+                <div class="quantity-control">
+                    <button type="button" class="btn btn-outline-secondary" @onclick="DecrementQuantity">-</button>
+                    <input type="text" readonly value="@quantity" />
+                    <button type="button" class="btn btn-outline-secondary" @onclick="IncrementQuantity">+</button>
+                </div>
                 <button type="button" class="btn btn-primary" @onclick="AddToCart">Add to cart</button>
             </div>
         </div>
